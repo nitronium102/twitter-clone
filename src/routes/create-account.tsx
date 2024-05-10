@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { auth } from "../firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import {
   Title,
@@ -9,6 +9,7 @@ import {
   Form,
   Input,
   Switcher,
+  Error,
 } from "../components/auth-components";
 
 export default function CreateAccount() {

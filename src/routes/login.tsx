@@ -9,6 +9,7 @@ import {
   Form,
   Input,
   Switcher,
+  Error,
 } from "../components/auth-components";
 
 export default function Login() {
