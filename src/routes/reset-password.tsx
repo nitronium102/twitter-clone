@@ -1,8 +1,8 @@
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
-import { auth } from "../firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../firebase";
 import {
   Title,
   Wrapper,
@@ -13,11 +13,10 @@ import {
 } from "../components/auth-components";
 import GithubButton from "../components/github-btn";
 
-export default function CreateAccount() {
+export default function ResetPassword() {
   const navigate = useNavigate();
 
   const [isLoading, setLoading] = useState(false);
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,9 +25,8 @@ export default function CreateAccount() {
     const {
       target: { name, value },
     } = e;
-    if (name === "name") {
-      setName(value);
-    } else if (name === "email") {
+
+    if (name === "email") {
       setEmail(value);
     } else if (name === "password") {
       setPassword(value);
@@ -39,20 +37,13 @@ export default function CreateAccount() {
     e.preventDefault();
     setError("");
 
-    if (isLoading || name === "" || email === "" || password === "") return;
+    if (isLoading || email === "" || password === "") return;
 
     try {
       setLoading(true);
-      const credentials = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log(credentials.user);
-      await updateProfile(credentials.user, {
-        displayName: name,
-      });
-      navigate("/");
+      await sendPasswordResetEmail(auth, email);
+      alert("Password has successfully reset. Please login with new password");
+      navigate("/login");
     } catch (e) {
       if (e instanceof FirebaseError) {
         setError(e.message);
@@ -60,22 +51,12 @@ export default function CreateAccount() {
     } finally {
       setLoading(false);
     }
-
-    console.log(name, email, password);
   };
 
   return (
     <Wrapper>
-      <Title>Join 𝕏</Title>
+      <Title>Reset Password</Title>
       <Form onSubmit={onSubmit}>
-        <Input
-          onChange={onChange}
-          name="name"
-          value={name}
-          placeholder="Name"
-          type="text"
-          required
-        />
         <Input
           onChange={onChange}
           name="email"
@@ -84,20 +65,13 @@ export default function CreateAccount() {
           type="email"
           required
         />
-        <Input
-          onChange={onChange}
-          value={password}
-          name="password"
-          placeholder="Password"
-          type="password"
-          required
-        />
-        <Input
-          type="submit"
-          value={isLoading ? "Loading..." : "Create Account"}
-        />
+        <Input type="submit" value={isLoading ? "Loading..." : "Send email"} />
       </Form>
       {error !== "" ? <Error>{error}</Error> : null}
+      <Switcher>
+        Don't have an account?{" "}
+        <Link to="/create-account">Create One &rarr;</Link>
+      </Switcher>
       <Switcher>
         Already have an account? <Link to="/login">Log in &rarr;</Link>
       </Switcher>
