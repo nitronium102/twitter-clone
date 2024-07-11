@@ -30,6 +30,12 @@ const Payload = styled.p`
   font-size: 18px;
 `;
 
+const CreatedAt = styled.span`
+  margin: 10px;
+  font-size: 15px;
+  color: grey;
+`;
+
 const DeleteButton = styled.button`
   background-color: tomato;
   color: white;
@@ -42,8 +48,19 @@ const DeleteButton = styled.button`
   cursor: pointer;
 `;
 
-export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
+export default function Tweet({
+  createdAt,
+  username,
+  photo,
+  tweet,
+  userId,
+  id,
+}: ITweet) {
   const user = auth.currentUser;
+  const dateObject: Date = new Date(createdAt * 100);
+  dateObject.setHours(dateObject.getHours() + 9);
+  const formattedDate: string = dateObject.toISOString();
+
   const onDelete = async () => {
     const ok = confirm("Are you sure you want to delete this tweet?");
 
@@ -66,7 +83,7 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
     <Wrapper>
       <Column>
         <Username>{username}</Username>
-        {}
+        <CreatedAt>{formattedDate}</CreatedAt>
         <Payload>{tweet}</Payload>
         {user?.uid === userId ? (
           <DeleteButton onClick={onDelete}>Delete</DeleteButton>
